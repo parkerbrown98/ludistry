@@ -23,7 +23,7 @@ namespace Ludistry
         server = std::make_unique<SocketServer>(12345);
         server->Start();
 
-        LoadLua("init.lua");
+        LoadLua("lua/init.lua");
     }
 
     void Game::Update()
