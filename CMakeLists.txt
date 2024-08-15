@@ -23,6 +23,14 @@ set(SOURCE_FILES
 )
 
 add_executable(lserver ${SOURCE_FILES})
+
+add_custom_command(
+    TARGET lserver POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+    ${LUA_DEST_DIR}
+    COMMENT "Removing old Lua files"
+)
+
 add_custom_command(
     TARGET lserver POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
