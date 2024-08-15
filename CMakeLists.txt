@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 project(lserver)
 
 set(CMAKE_CXX_STANDARD 17)
+set(LUA_SOURCE_DIR ${CMAKE_SOURCE_DIR}/lua)
+set(LUA_DEST_DIR ${CMAKE_BINARY_DIR}/lua)
 
 include(FetchContent)
 
@@ -21,6 +23,13 @@ set(SOURCE_FILES
 )
 
 add_executable(lserver ${SOURCE_FILES})
+add_custom_command(
+    TARGET lserver POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${LUA_SOURCE_DIR}
+    ${LUA_DEST_DIR}
+    COMMENT "Copying Lua files"
+)
 
 target_include_directories(lserver PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
