@@ -9,6 +9,7 @@ extern "C"
 #include "logger.h"
 #include "core/net.h"
 #include <memory>
+#include <variant>
 
 namespace Ludistry
 {
@@ -23,10 +24,14 @@ namespace Ludistry
 
         Game(const Game &) = delete;
         Game &operator=(const Game &) = delete;
+        ~Game();
         void Initialize();
         void Update();
         void Destroy();
         void LoadLua(const char *path);
+
+        using LuaValue = std::variant<std::string, int, double, bool>;
+        int CallLuaFunction(const char *name, const std::vector<LuaValue> &args);
 
         static void LuaSetup(lua_State *L);
         static int LuaInclude(lua_State *L);

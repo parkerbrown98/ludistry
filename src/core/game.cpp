@@ -24,6 +24,12 @@ namespace Ludistry
         server->Start();
 
         LoadLua("lua/init.lua");
+        CallLuaFunction("Initialize");
+    }
+
+    Game::~Game()
+    {
+        Destroy();
     }
 
     void Game::Update()
@@ -53,6 +59,63 @@ namespace Ludistry
             logger->Error(lua_tostring(L, -1));
             lua_pop(L, 1);
         }
+    }
+
+    int Game::CallLuaFunction(const char *name, const std::vector<LuaValue> &args = {})
+    {
+        lua_getglobal(L, "GAME"); // GAME
+        if (lua_istable(L, -1))
+        {
+            lua_getfield(L, -1, name); // GAME[name]
+            if (lua_isfunction(L, -1)) {
+                lua_pushvalue(L, -2); // GAME table (self)
+
+                // Push arguments
+                for (const auto &arg : args)
+                {
+                    std::visit([&](auto &&arg) {
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::is_same_v<T, std::string>)
+                        {
+                            lua_pushstring(L, arg.c_str());
+                        }
+                        else if constexpr (std::is_same_v<T, int>)
+                        {
+                            lua_pushinteger(L, arg);
+                        }
+                        else if constexpr (std::is_same_v<T, double>)
+                        {
+                            lua_pushnumber(L, arg);
+                        }
+                        else if constexpr (std::is_same_v<T, bool>)
+                        {
+                            lua_pushboolean(L, arg);
+                        }
+                    },
+                    arg);
+                }
+
+                if (lua_pcall(L, args.size() + 1, 0, 0) != LUA_OK)
+                {
+                    logger->Error(lua_tostring(L, -1));
+                    lua_pop(L, 1); // Pop error message
+                    return 0;
+                }
+            } else {
+                logger->Error("Function not found: " + std::string(name));
+                lua_pop(L, 2); // Pop GAME table and GAME[name]
+                return 0;
+            }
+        } else {
+            logger->Error("GAME table not found");
+            lua_pop(L, 1); // Pop GAME table
+            return 0;
+        }
+
+        // Pop GAME table
+        lua_pop(L, 1);
+
+        return 1;
     }
 
     void Game::LuaSetup(lua_State *L)
