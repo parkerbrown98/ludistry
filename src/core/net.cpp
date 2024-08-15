@@ -236,7 +236,5 @@ namespace Ludistry
         
         lua_pushcfunction(L, LuaGetName);
         lua_setfield(L, -2, "GetName");
-
-        lua_pop(L, 1);
     }
 }
