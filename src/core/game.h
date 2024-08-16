@@ -31,7 +31,7 @@ namespace Ludistry
         void LoadLua(const char *path);
 
         using LuaValue = std::variant<std::string, int, double, bool>;
-        int CallLuaFunction(const char *name, const std::vector<LuaValue> &args);
+        int CallLuaFunction(const char *name, const std::vector<LuaValue> &args = {});
 
         static void LuaSetup(lua_State *L);
         static int LuaInclude(lua_State *L);

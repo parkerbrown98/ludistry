@@ -34,6 +34,7 @@ namespace Ludistry
 
     void Game::Update()
     {
+        CallLuaFunction("Update");
     }
 
     void Game::Destroy()
@@ -61,7 +62,7 @@ namespace Ludistry
         }
     }
 
-    int Game::CallLuaFunction(const char *name, const std::vector<LuaValue> &args = {})
+    int Game::CallLuaFunction(const char *name, const std::vector<LuaValue> &args)
     {
         lua_getglobal(L, "GAME"); // GAME
         if (lua_istable(L, -1))
